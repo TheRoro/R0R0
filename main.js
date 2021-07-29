@@ -50,4 +50,4 @@ client.on('message', async message => {
         client.commands.get('biti').execute(message, args)
     }
 })
-client.login(process.env.TOKEN)
+client.login(process.env.R0R0_TOKEN)
