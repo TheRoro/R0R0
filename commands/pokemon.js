@@ -15,13 +15,17 @@ module.exports = {
             })
             return response.data
         }
+        const formatArgs = (args) => {
+            return args[0].toLowerCase()
+        }
+
         const formatString = (name) => {
             return name.charAt(0).toUpperCase() + name.slice(1);
         }
         const formatValue = (data) => {
             value = data.toString()
             let formated = ''
-            if(value.length >= 2) {
+            if (value.length >= 2) {
                 formated = value.substring(0, value.length - 1) + '.' + value.substring(value.length - 1, value.length)
             }
             else {
@@ -33,15 +37,16 @@ module.exports = {
         let pokeId = ''
         let url = `https://pokeapi.co/api/v2/pokemon/${pokeId}`
 
-        if(args === '') {
+        if (args.length == 0) {
             pokeId = getPokeId(1, 899)
             url = `https://pokeapi.co/api/v2/pokemon/${pokeId}`
         }
         else {
-            url = `https://pokeapi.co/api/v2/pokemon/${args}`
+            pkArgs = formatArgs(args)
+            url = `https://pokeapi.co/api/v2/pokemon/${pkArgs}`
         }
         let PokeInfo = await getPokemon(url)
-        if(!PokeInfo) {
+        if (!PokeInfo) {
             return
         }
         PokeInfo = await getPokemon(url)
@@ -52,13 +57,13 @@ module.exports = {
         let sprite = PokeInfo.sprites.other['official-artwork'].front_default
 
         const Embed = new Discord.MessageEmbed()
-        .setColor(color)
-        .setTitle(`${name}`)
-        .setURL(`${url}`)
-        .setAuthor(`${pokeId}: ${name}`, faviconUrl, `${url}`)
-        .setDescription(``)
-        .setThumbnail(`${sprite}`)
-        
+            .setColor(color)
+            .setTitle(`${name}`)
+            .setURL(`${url}`)
+            .setAuthor(`${pokeId}: ${name}`, faviconUrl, `${url}`)
+            .setDescription(``)
+            .setThumbnail(`${sprite}`)
+
         for (let i = 0; i < PokeInfo.types.length; i++) {
             const TypeInfo = PokeInfo.types[i];
             Embed.addField(`Type ${TypeInfo.slot}`, `${formatString(TypeInfo.type.name)}`)
@@ -66,8 +71,8 @@ module.exports = {
 
         for (let i = 0; i < PokeInfo.abilities.length; i++) {
             const AbilityInfo = PokeInfo.abilities[i];
-            if(!AbilityInfo.is_hidden) {
-                Embed.addField(`Ability ${i+1}`, `${formatString(AbilityInfo.ability.name)}`)
+            if (!AbilityInfo.is_hidden) {
+                Embed.addField(`Ability ${i + 1}`, `${formatString(AbilityInfo.ability.name)}`)
             }
             else {
                 Embed.addField(`Hidden Ability`, `${formatString(AbilityInfo.ability.name)}`)
@@ -78,9 +83,9 @@ module.exports = {
         Embed.addField(`Height`, `${formatValue(PokeInfo.height)} m`)
 
         Embed
-        .setImage(`${sprite}`)
-        .setTimestamp()
-        .setFooter('Data from PokeAPI', faviconUrl)
+            .setImage(`${sprite}`)
+            .setTimestamp()
+            .setFooter('Data from PokeAPI', faviconUrl)
 
         message.channel.send(Embed)
     }
